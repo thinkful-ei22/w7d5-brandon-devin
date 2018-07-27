@@ -5,6 +5,14 @@ import GuessSection from './guess-section';
 import StatusSection from './status-section';
 import InfoSection from './info-section';
 
+import store from '../store';
+import {restartGame, makeGuess, generateAuralUpdate} from '../actions';
+
+// store.dispatch(restartGame());
+// store.dispatch(makeGuess('You win!', 99));
+// store.dispatch(generateAuralUpdate('Here\'s the status of the game right now: A winner is you! WOW!'));
+
+
 export default class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -17,12 +25,15 @@ export default class Game extends React.Component {
   }
 
   restartGame() {
-    this.setState({
-      guesses: [],
-      feedback: 'Make your guess!',
-      auralStatus: '',
-      correctAnswer: Math.floor(Math.random() * 100) + 1
-    });
+
+    store.dispatch(restartGame());
+
+    // this.setState({
+    //   guesses: [],
+    //   feedback: 'Make your guess!',
+    //   auralStatus: '',
+    //   correctAnswer: Math.floor(Math.random() * 100) + 1
+    // });
   }
 
   makeGuess(guess) {
@@ -47,10 +58,11 @@ export default class Game extends React.Component {
       feedback = 'You got it!';
     }
 
-    this.setState({
-      feedback,
-      guesses: [...this.state.guesses, guess]
-    });
+    store.dispatch(makeGuess(feedback, guess));
+    // this.setState({
+    //   feedback,
+    //   guesses: [...this.state.guesses, guess]
+    // });
 
     // We typically wouldn't touch the DOM directly like this in React
     // but this is the best way to update the title of the page,
@@ -77,7 +89,8 @@ export default class Game extends React.Component {
   }
 
   render() {
-    const { feedback, guesses, auralStatus } = this.state;
+    const redStore = store.getState();
+    const { feedback, guesses, auralStatus } = redStore;
     const guessCount = guesses.length;
 
     return (
